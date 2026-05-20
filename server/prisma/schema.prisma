@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ActivityType {
+  PROJECT_CREATED
+  PROJECT_UPDATED
+  PROJECT_DELETED
+  TASK_CREATED
+  TASK_UPDATED
+  TASK_DELETED
+  COMMENT_CREATED
+  MEMBER_INVITED
+  FILE_ATTACHED
+}
+
+model User {
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  password       String
+  role           Role            @default(MEMBER)
+  avatarUrl      String?
+  jobTitle       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  ownedProjects  Project[]       @relation("ProjectOwner")
+  assignments    Task[]          @relation("TaskAssignee")
+  comments       Comment[]
+  activities     ActivityLog[]
+  teamMembership TeamMember[]
+  notifications  Notification[]
+  attachments    Attachment[]
+}
+
+model Team {
+  id        String       @id @default(cuid())
+  name      String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  members   TeamMember[]
+  projects  Project[]
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  userId    String
+  teamId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  deadline    DateTime?
+  priority    Priority      @default(MEDIUM)
+  progress    Int           @default(0)
+  ownerId     String
+  teamId      String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  owner       User          @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  team        Team?         @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  tasks       Task[]
+  activities  ActivityLog[]
+  attachments Attachment[]
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    Priority     @default(MEDIUM)
+  dueDate     DateTime?
+  order       Int          @default(0)
+  projectId   String
+  assigneeId  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee    User?        @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  comments    Comment[]
+  activities  ActivityLog[]
+  attachments Attachment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  taskId    String
+  authorId  String
+  createdAt DateTime @default(now())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model ActivityLog {
+  id        String       @id @default(cuid())
+  type      ActivityType
+  message   String
+  userId    String
+  projectId String?
+  taskId    String?
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task      Task?        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  filename  String
+  url       String
+  mimeType  String
+  size      Int
+  uploaderId String
+  projectId String?
+  taskId    String?
+  createdAt DateTime @default(now())
+  uploader  User     @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}

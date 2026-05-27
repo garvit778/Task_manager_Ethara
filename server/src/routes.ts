@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { attachmentRouter } from "./modules/attachments/attachment.routes.js";
+import { analyticsRouter } from "./modules/analytics/analytics.routes.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
 import { dashboardRouter } from "./modules/dashboard/dashboard.routes.js";
 import { notificationRouter } from "./modules/notifications/notification.routes.js";
@@ -17,3 +18,4 @@ apiRouter.use("/tasks", taskRouter);
 apiRouter.use("/users", userRouter);
 apiRouter.use("/notifications", notificationRouter);
 apiRouter.use("/attachments", attachmentRouter);
+apiRouter.use("/analytics", analyticsRouter);

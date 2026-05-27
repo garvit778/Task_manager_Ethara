@@ -8,6 +8,17 @@ interface DashboardData {
   priorityCounts: Array<{ priority: string; count: number }>;
   recentActivity: Array<any>;
   productivity: Array<{ name: string; assigned: number; completed: number }>;
+  sparkSnapshots: Array<{
+    id: string;
+    projectId: string;
+    projectTitle: string;
+    totalTasks: number;
+    completedTasks: number;
+    pendingTasks: number;
+    overdueTasks: number;
+    completionRate: number;
+    snapshotAt: string;
+  }>;
 }
 
 interface DataState {

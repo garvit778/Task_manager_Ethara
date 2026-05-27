@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("postgresql://neondb_owner:npg_Fmj5EVbWH4wp@ep-fancy-feather-apn9fo7j-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
 }
 
 enum Role {
@@ -92,6 +92,7 @@ model Project {
   tasks       Task[]
   activities  ActivityLog[]
   attachments Attachment[]
+  analyticsSnapshots AnalyticsSnapshot[]
 }
 
 model Task {
@@ -159,4 +160,21 @@ model Attachment {
   uploader  User     @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
   project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model AnalyticsSnapshot {
+  id             String   @id
+  projectId      String   @map("project_id")
+  projectTitle   String   @map("project_title")
+  totalTasks     Int      @map("total_tasks")
+  completedTasks Int      @map("completed_tasks")
+  pendingTasks   Int      @map("pending_tasks")
+  overdueTasks   Int      @map("overdue_tasks")
+  completionRate Float    @map("completion_rate")
+  snapshotAt     DateTime @map("snapshot_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, snapshotAt])
+  @@map("analytics_snapshots")
 }

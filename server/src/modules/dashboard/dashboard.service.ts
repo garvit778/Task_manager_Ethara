@@ -1,4 +1,5 @@
 import { prisma } from "../../config/prisma.js";
+import { latestSnapshots } from "../analytics/analytics.service.js";
 
 export const getDashboard = async (user: Express.User) => {
   const accessWhere =
@@ -54,6 +55,7 @@ export const getDashboard = async (user: Express.User) => {
     statusCounts,
     priorityCounts,
     recentActivity: activities,
-    productivity: Array.from(members.values())
+    productivity: Array.from(members.values()),
+    sparkSnapshots: await latestSnapshots(user)
   };
 };

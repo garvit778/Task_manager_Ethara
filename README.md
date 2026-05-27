@@ -13,12 +13,14 @@ It is designed as a recruiter-friendly startup-grade project inspired by Trello,
 - Task CRUD with assignees, priorities, due dates, comments, activity logs, and Kanban status movement
 - Animated dashboard with metrics, charts, recent activity, and team productivity
 - Real-time client refresh using Socket.io
+- Integrated PySpark analytics snapshots for large-scale reporting workflows
 - Team directory, calendar view, profile settings, notifications, and file attachment API
 - Helmet, CORS, rate limiting, HPP, XSS cleaning, validation middleware, and centralized error handling
 - Prisma relational schema with users, teams, projects, tasks, comments, activity logs, notifications, and attachments
 - Seed script with demo users, project, tasks, activity, and comments
 - Vercel and Railway deployment configuration
 - Postman collection: `ProjectPilot.postman_collection.json`
+- AWS deployment guide: `docs/AWS_DEPLOYMENT.md`
 
 ## Screenshots
 

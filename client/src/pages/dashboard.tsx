@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { CheckCircle2, Clock3, FolderKanban, ListTodo, TimerReset } from "lucide-react";
+import { CheckCircle2, Clock3, DatabaseZap, FolderKanban, ListTodo, TimerReset } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageTransition } from "@/components/page-transition";
@@ -105,6 +105,39 @@ export const DashboardPage = () => {
             </CardContent>
           </Card>
         </div>
+
+        <Card className="glass">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DatabaseZap className="h-5 w-5 text-primary" />
+              PySpark analytics snapshots
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {(dashboard?.sparkSnapshots ?? []).length ? (
+              dashboard!.sparkSnapshots.map((snapshot) => (
+                <div key={snapshot.id} className="rounded-lg border bg-background/60 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-bold">{snapshot.projectTitle}</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">Snapshot: {formatDate(snapshot.snapshotAt)}</p>
+                    </div>
+                    <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-bold text-primary">{snapshot.completionRate}%</span>
+                  </div>
+                  <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+                    <div className="rounded-md bg-muted p-2"><p className="font-bold">{snapshot.totalTasks}</p><p className="text-muted-foreground">Total</p></div>
+                    <div className="rounded-md bg-muted p-2"><p className="font-bold">{snapshot.completedTasks}</p><p className="text-muted-foreground">Done</p></div>
+                    <div className="rounded-md bg-muted p-2"><p className="font-bold">{snapshot.overdueTasks}</p><p className="text-muted-foreground">Late</p></div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-lg border bg-background/60 p-4 text-sm text-muted-foreground md:col-span-2 xl:col-span-3">
+                Run the PySpark job to populate database-backed analytics snapshots.
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </PageTransition>
   );
